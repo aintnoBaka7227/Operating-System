@@ -4,12 +4,12 @@
 #include <signal.h>
 
 void signal_handler_int(int sig) {
-    printf("\nYeah!\n");
+    printf("Yeah!\n");
     fflush(stdout);
 }
 
 void signal_handle_hup(int sig) {
-    printf("\nOuch!\n");
+    printf("Ouch!\n");
     fflush(stdout);
 }
 

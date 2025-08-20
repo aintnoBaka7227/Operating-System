@@ -5,12 +5,10 @@
 
 void signal_handler_int(int sig) {
     printf("Yeah!\n");
-    fflush(stdout);
 }
 
 void signal_handle_hup(int sig) {
     printf("Ouch!\n");
-    fflush(stdout);
 }
 
 int main(int argc, char *argv[]) {
@@ -27,7 +25,6 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < 2*n; i+=2) {
         printf("%d\n", i);
-        fflush(stdout);
         sleep(5);
     }
 

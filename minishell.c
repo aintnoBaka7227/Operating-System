@@ -201,7 +201,7 @@ int main(int argk, char *argv[], char *envp[])
                     
                 // } else if (result == -1) {
                 //     perror("waitpid");
-                // }
+                }
             }
         }
 

@@ -182,9 +182,10 @@ int main(int argk, char *argv[], char *envp[])
         else {
           // forground job wait for child process finish before continuing
           // waitpid to pause parent to wait executed child finish
-            if (waitpid(frkRtnVal, NULL, 0) == -1) {
-                perror("waitpid");
-            }
+          waitpid(frkRtnVal, NULL, 0);
+            // if (waitpid(frkRtnVal, NULL, 0) == -1) {
+            //     perror("waitpid");
+            // }
         }
         bg_flag = 0;
         // loop through recorded jobs to check active status
@@ -198,9 +199,9 @@ int main(int argk, char *argv[], char *envp[])
                     // mark as non-active
                     bg_pid_nums[job] = 0;
                     
-                } else if (result == -1) {
-                    perror("waitpid");
-                }
+                // } else if (result == -1) {
+                //     perror("waitpid");
+                // }
             }
         }
 

@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <linux/limits.h>
+#include <errno.h>
 
 #define NV 20			/* max number of command tokens */
 #define NL 100			/* input buffer size */
@@ -122,9 +123,8 @@ int main(int argk, char *argv[], char *envp[])
       static char prev_dir_name[PATH_MAX] = "";
       // track current directory name
       char curr_dir_name[PATH_MAX];
-      if (!getcwd(curr_dir_name, sizeof(curr_dir_name))) {
-        perror("getcwd");
-        curr_dir_name[0] = '\0';  
+      if (getcwd(curr_dir_name, sizeof(curr_dir_name)) == NULL) {
+        perror("getcwd");  
       }
 
       // single var to track path
@@ -185,7 +185,7 @@ int main(int argk, char *argv[], char *envp[])
           // forground job wait for child process finish before continuing
           // waitpid to pause parent to wait executed child finish
             if (waitpid(frkRtnVal, NULL, 0) == -1) {
-              perror("waitpid");
+                perror("waitpid");
             }
         }
         bg_flag = 0;

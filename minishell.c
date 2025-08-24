@@ -123,9 +123,7 @@ int main(int argk, char *argv[], char *envp[])
       static char prev_dir_name[PATH_MAX] = "";
       // track current directory name
       char curr_dir_name[PATH_MAX];
-      if (getcwd(curr_dir_name, sizeof(curr_dir_name)) == NULL) {
-        perror("getcwd");  
-      }
+      getcwd(curr_dir_name, sizeof(curr_dir_name));
 
       // single var to track path
       const char *target = NULL;

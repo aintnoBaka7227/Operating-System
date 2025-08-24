@@ -28,8 +28,8 @@ char            line[NL];	/* command input buffer */
 
 void prompt(void)
 {
-  // ## REMOVE THIS 'fprintf' STATEMENT BEFORE SUBMISSION
-  fprintf(stdout, "\n msh> ");
+  // // ## REMOVE THIS 'fprintf' STATEMENT BEFORE SUBMISSION
+  // fprintf(stdout, "\n msh> ");
   fflush(stdout);
 }
 
@@ -102,24 +102,34 @@ int main(int argk, char *argv[], char *envp[])
         }
     }
 
-    // handle built-in cd
+    /*
+      Implementation for built-in cd
+      Currently handle two cases: cd and cd PATH
+    */
     if (v[0] && strcmp("cd", v[0]) == 0) {
+        // track previous directory name
         static char prev_dir_name[PATH_MAX] = "";
+        // track current directory name
         char curr_dir_name[PATH_MAX];
         getcwd(curr_dir_name, sizeof(curr_dir_name));
 
         const char *target = NULL;
-        // go to $HOME : no arguments
+        // case 1: no path
+        // if environmental var HOME exist use HOME as path
         if (v[1] == NULL) {
             target = getenv("HOME");
+            // else use "/" to get back to root dir
             if (target == NULL) {
                 target = "/";
             }
-        } else target = v[1];
+        } else {
+          target = v[1]; 
+        }
         if (chdir(target) == -1) {
             perror("chdir");
         }
         else {
+            // update previous directory name
             strncpy(prev_dir_name, curr_dir_name, sizeof(prev_dir_name));
             prev_dir_name[sizeof(prev_dir_name) - 1] = '\0';
         }
@@ -130,43 +140,49 @@ int main(int argk, char *argv[], char *envp[])
     switch (frkRtnVal = fork()) {
       case -1:			/* fork returns error to parent process */
       {   
-        perror("fork failed");
-	    break;
+        perror("fork");
+	      break;
       }
       case 0:			/* code executed only by child process */
       {
-	    execvp(v[0], v);
-        perror("execvp fail");
+	      execvp(v[0], v);
+        perror("execvp");
         exit(1);
       }
       default:			/* code executed only by parent process */
       {
-        // sparse child process
+        // track job running in the back ground
         if (bg_flag) {
+            // store pid for the new background job
             bg_pid_nums[count] = frkRtnVal;
+            // store the command line use for the background job
             strncpy(bg_pid_args[count], bg_commands, NL-1);
             bg_pid_args[count][NL-1] = '\0';
             printf("[%d] %d\n", count, frkRtnVal);
             count++;
         }
         else {
+            // forground job wait for child process finish before continuing
+            // waitpid to pause parent to wait executed child finish
             if (waitpid(frkRtnVal, NULL, 0) == -1) perror("waitpid");
         }
         bg_flag = 0;
         // check if any background job finish
         for (int job = 1; job < count; job++) {
             if (bg_pid_nums[job] > 0) {
+                // use WNOHANG to not blocking the specified child process execution while collecting status
                 pid_t result = waitpid(bg_pid_nums[job], NULL, WNOHANG);
                 if (result == bg_pid_nums[job]) {
-                    printf("[%d]+ Done                 %s\n", job, bg_pid_args[job]);
+                    printf("[%d]+ Done %s\n", job, bg_pid_args[job]);
                     bg_pid_nums[job] = 0;
                 }
             }
         }
-
-    	break;
+    	  break;
       }
     }				/* switch */
   }
   return 0;				/* while */
 }				/* main */
+
+
